@@ -1,0 +1,125 @@
+import cumbre.*
+import pais.*
+import participantes.*
+import conocimientos.*
+import actividades.*
+
+describe "Tests Cumbre" {
+	const coreaDelNorte = new Pais()
+	const coreaDelSur = new Pais()
+	const argentina = new Pais()
+	const brasil = new Pais()
+	const colombia = new Pais()
+	const juana = new Programador(pais=argentina,conocimientos=#{programacionBasica,css,html},commits=600)
+	const lucia = new Programador(pais=brasil,conocimientos=#{programacionBasica,basesDeDatos},commits=800)
+	const mariana = new Especialista(pais=argentina,conocimientos=#{programacionBasica,instalacionLinux,objetos,disenioConObjetos},commits=200)
+	const susana = new Especialista(pais=colombia,conocimientos=#{programacionBasica,objetos},commits=1500)
+	const xi = new Especialista(pais=coreaDelSur,conocimientos=#{programacionBasica,html,css,objetos},commits=400)
+	const chang = new Especialista(pais=coreaDelSur,conocimientos=#{objetos},commits=200)
+	const li = new Especialista(pais=coreaDelSur,conocimientos=#{programacionBasica,objetos},commits=100)
+	const cho = new Especialista(pais=coreaDelSur,conocimientos=#{programacionBasica},commits=100)
+	const basesDeDatos1 = new Actividad(tema=basesDeDatos,horas=3)
+	const objetos1 = new Actividad(tema=objetos,horas=4)
+	
+	method initialize() {
+		coreaDelNorte.registrarConflicto(coreaDelSur)
+		coreaDelSur.registrarConflicto(coreaDelNorte)
+		cumbre.registrarIngreso(juana)
+		cumbre.registrarIngreso(lucia)
+		cumbre.registrarIngreso(mariana)
+		cumbre.registrarAuspiciante(argentina)
+		cumbre.registrarAuspiciante(colombia)
+		cumbre.registrarAuspiciante(coreaDelNorte)
+	}
+	
+	test "Corea del Norte está en conflicto con Corea del Sur" {
+		assert.equals(#{coreaDelSur}, coreaDelNorte.paisesConConflicto())
+	}
+	test "Corea del Sur está en conflicto con Corea del Norte" {
+		assert.equals(#{coreaDelNorte}, coreaDelSur.paisesConConflicto())
+	}
+	test "Los paises participantes son Argentina y Brasil" {
+		assert.equals(#{argentina,brasil}, cumbre.paisesDeLosParticipantes())
+	}
+	test "Hay 2 participantes de Argentina y 1 de Brasil" {
+		assert.equals(2, cumbre.cantDeParticipantesDe(argentina))
+		assert.equals(1, cumbre.cantDeParticipantesDe(brasil))
+	}
+	test "El país con más participantes es Argentina" {
+		assert.equals(argentina, cumbre.paisConMasParticipantes())
+	}
+	test "La cumbre es relevante" {
+		assert.that(cumbre.esRelevante())
+	}
+	test "Agregando a Susana, los paises participantes son Argentina, Brasil, Colombia" {
+		cumbre.registrarIngreso(susana)
+		assert.equals(#{argentina,brasil,colombia}, cumbre.paisesDeLosParticipantes())
+	}
+	test "Agregando a Susana, Argentina sigue siendo el país con más participantes" {
+		cumbre.registrarIngreso(susana)
+		assert.equals(argentina, cumbre.paisConMasParticipantes())
+	}
+	test "Agregando a Susana, la cumbre no es relevante" {
+		cumbre.registrarIngreso(susana)
+		assert.notThat(cumbre.esRelevante())
+	}
+	test "Juana no tiene restringido el acceso" {
+		assert.notThat(cumbre.tieneRestringidoElAcceso(juana))
+	}
+	test "Xi tiene restringido el acceso" {
+		cumbre.registrarIngreso(chang)
+		cumbre.registrarIngreso(li)
+		cumbre.registrarIngreso(cho)
+		assert.that(cumbre.tieneRestringidoElAcceso(xi))
+	}
+	test "Juana puede ingresar" {
+		assert.that(cumbre.puedeIngresar(juana))
+	}
+	test "Mariana no puede ingresar" {
+		assert.notThat(cumbre.puedeIngresar(mariana))
+	}
+	test "Registra el ingreso de Juana" {
+		cumbre.darIngreso(juana)
+		assert.equals(#{juana}, cumbre.ingresos())
+	}
+	test "Da error al querer ingresar a Mariana" {
+		assert.throwsExceptionWithMessage("No cumple con los requisitos para ingresar", {cumbre.darIngreso(mariana)})
+	}
+	test "La cumbre no es segura" {
+		assert.notThat(cumbre.esSegura())
+	}
+	test "La cumbre agrega la actividad de bases de datos, teniendo Juana 624 commits, lucia 824 y mariana 224" {
+		cumbre.agregarActividad(basesDeDatos1)
+		assert.equals(624, juana.commits())
+		assert.equals(824, lucia.commits())
+		assert.equals(224, mariana.commits())
+	}
+	test "Las horas realizadas con una actividad de bases de datos de 3 horas y una de objetos de 4 horas es 7" {
+		cumbre.agregarActividad(basesDeDatos1)
+		cumbre.agregarActividad(objetos1)
+		assert.equals(7, cumbre.horasRealizadas())
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

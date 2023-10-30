@@ -1,0 +1,91 @@
+import participantes.*
+import conocimientos.*
+import cumbre.*
+import pais.*
+import empresa.*
+import actividades.*
+
+describe "Tests Programador" {
+	const argentina = new Pais()
+	const juana = new Programador(pais=argentina,conocimientos=#{programacionBasica,css,html},commits=600)
+	const paula = new Programador(pais=argentina,conocimientos=#{programacionBasica},commits=100)
+	const basesDeDatos1 = new Actividad(tema=basesDeDatos,horas=3)
+	
+	test "Juana es capa" {
+		assert.that(juana.esCapo())
+	}
+	test "Paula no es capa" {
+		assert.notThat(paula.esCapo())
+	}
+	test "Juana puede participar" {
+		assert.that(juana.puedeParticipar())
+	}
+	test "Paula puede participar" {
+		assert.notThat(paula.puedeParticipar())
+	}
+	test "Juana hace una actividad de bases de datos que dura 3 horas, teniendo ahora 624 commits y sumando un conocimiento más" {
+		juana.hacerActividad(basesDeDatos1)
+		assert.equals(624, juana.commits())
+		assert.equals(#{programacionBasica,css,html,basesDeDatos}, juana.conocimientos())
+	}
+}
+
+describe "Tests Especialista" {
+	const argentina = new Pais()
+	const uruguay = new Pais()
+	const ana = new Especialista(pais=argentina,conocimientos=#{html},commits=800)
+	const diana = new Especialista(pais=uruguay,conocimientos=#{programacionBasica,objetos,basesDeDatos,manejoDeGrupos},commits=400)
+	
+	test "Ana no es capa" {
+		assert.notThat(ana.esCapo())
+	}
+	test "Diana es capa" {
+		assert.that(diana.esCapo())
+	}
+	test "Ana no puede participar" {
+		assert.notThat(ana.puedeParticipar())
+	}
+	test "Diana puede participar" {
+		assert.that(diana.puedeParticipar())
+	}
+}
+
+describe "Tests Gerente" {
+	const argentina = new Pais()
+	const brasil = new Pais()
+	const usa = new Pais()
+	const logitech = new Empresa(paises=#{brasil,argentina,usa})
+	const wollokInc = new Empresa(paises=#{brasil,argentina})
+	const manuel = new Gerente(pais=argentina,conocimientos=#{html,manejoDeGrupos,programacionBasica},commits=800,empresa=logitech)
+	const alejandra = new Gerente(pais=argentina,conocimientos=#{html,programacionBasica},commits=800, empresa=wollokInc)
+	
+	test "Manuel es capo" {
+		assert.that(manuel.esCapo())
+	}
+	test "Alejandra no es capa" {
+		assert.notThat(alejandra.esCapo())
+	}
+	test "Manuel puede participar" {
+		assert.that(manuel.puedeParticipar())
+	}
+	test "alejandra no puede participar" {
+		assert.notThat(alejandra.puedeParticipar())
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
